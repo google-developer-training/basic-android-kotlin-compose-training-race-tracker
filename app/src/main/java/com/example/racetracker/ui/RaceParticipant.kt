@@ -43,17 +43,6 @@ class RaceParticipant(
         private set
 
     /**
-     * Updates the value of [currentProgress] by value [progressIncrement] until it reaches
-     * [maxProgress]. There is a delay of [progressDelayMillis] between each update.
-     */
-    suspend fun run() {
-        while (currentProgress < maxProgress) {
-            delay(progressDelayMillis)
-            currentProgress += progressIncrement
-        }
-    }
-
-    /**
      * Regardless of the value of [initialProgress] the reset function will reset the
      * [currentProgress] to 0
      */
