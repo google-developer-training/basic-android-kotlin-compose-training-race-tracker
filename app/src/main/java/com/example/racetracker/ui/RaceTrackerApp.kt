@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -67,7 +69,11 @@ fun RaceTrackerApp() {
         playerOne = playerOne,
         playerTwo = playerTwo,
         isRunning = raceInProgress,
-        onRunStateChange = { raceInProgress = it }
+        onRunStateChange = { raceInProgress = it },
+        modifier = Modifier
+            .fillMaxSize()
+            .safeContentPadding()
+            .padding(dimensionResource(R.dimen.padding_medium)),
     )
 }
 
@@ -80,9 +86,7 @@ private fun RaceTrackerScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(dimensionResource(R.dimen.padding_medium)),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -106,7 +110,8 @@ private fun RaceTrackerScreen(
                     R.string.progress_percentage,
                     playerOne.maxProgress
                 ),
-                progressFactor = playerOne.progressFactor
+                progressFactor = playerOne.progressFactor,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
             StatusIndicator(
@@ -116,7 +121,8 @@ private fun RaceTrackerScreen(
                     R.string.progress_percentage,
                     playerTwo.maxProgress
                 ),
-                progressFactor = playerTwo.progressFactor
+                progressFactor = playerTwo.progressFactor,
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
             RaceControls(
@@ -126,7 +132,8 @@ private fun RaceTrackerScreen(
                     playerOne.reset()
                     playerTwo.reset()
                     onRunStateChange(false)
-                }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -140,13 +147,15 @@ private fun StatusIndicator(
     progressFactor: Float,
     modifier: Modifier = Modifier
 ) {
-    Row {
-        Text(participantName, Modifier.padding(end = dimensionResource(R.dimen.padding_small)))
-
+    Row(
+        modifier = modifier
+    ) {
+        Text(
+            text = participantName,
+            modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
+        )
         Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
             LinearProgressIndicator(
@@ -183,20 +192,19 @@ private fun RaceControls(
     isRunning: Boolean = true,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(onClick = { onRunStateChange(!isRunning) }) {
             Text(if (isRunning) stringResource(R.string.pause) else stringResource(R.string.start))
         }
-
         Button(onClick = onReset) {
             Text(stringResource(R.string.reset))
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun RaceTrackerAppPreview() {
     MaterialTheme {
