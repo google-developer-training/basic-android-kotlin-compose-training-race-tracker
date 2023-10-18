@@ -210,18 +210,18 @@ private fun RaceControls(
     isRunning: Boolean = true,
 ) {
     Column(
-        modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
+        modifier = modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ) {
         Button(
             onClick = { onRunStateChange(!isRunning) },
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(if (isRunning) stringResource(R.string.pause) else stringResource(R.string.start))
         }
         OutlinedButton(
             onClick = onReset,
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.reset))
         }
