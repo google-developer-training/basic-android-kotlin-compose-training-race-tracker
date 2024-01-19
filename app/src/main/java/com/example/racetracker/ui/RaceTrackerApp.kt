@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,6 +51,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.racetracker.R
+import com.example.racetracker.ui.theme.RaceTrackerTheme
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -79,7 +83,13 @@ fun RaceTrackerApp() {
         playerOne = playerOne,
         playerTwo = playerTwo,
         isRunning = raceInProgress,
-        onRunStateChange = { raceInProgress = it }
+        onRunStateChange = { raceInProgress = it },
+        modifier = Modifier
+            .statusBarsPadding()
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .safeDrawingPadding()
+            .padding(horizontal = dimensionResource(R.dimen.padding_medium)),
     )
 }
 
@@ -92,25 +102,25 @@ private fun RaceTrackerScreen(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(dimensionResource(R.dimen.padding_medium)),
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(R.string.run_a_race),
-            style = MaterialTheme.typography.headlineLarge,
+            style = MaterialTheme.typography.headlineSmall,
         )
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(dimensionResource(R.dimen.padding_medium)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_walk),
                 contentDescription = null,
-
-                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
             )
             StatusIndicator(
                 participantName = playerOne.name,
@@ -119,7 +129,8 @@ private fun RaceTrackerScreen(
                     R.string.progress_percentage,
                     playerOne.maxProgress
                 ),
-                progressFactor = playerOne.progressFactor
+                progressFactor = playerOne.progressFactor,
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
             StatusIndicator(
@@ -129,7 +140,8 @@ private fun RaceTrackerScreen(
                     R.string.progress_percentage,
                     playerTwo.maxProgress
                 ),
-                progressFactor = playerTwo.progressFactor
+                progressFactor = playerTwo.progressFactor,
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
             RaceControls(
@@ -139,7 +151,8 @@ private fun RaceTrackerScreen(
                     playerOne.reset()
                     playerTwo.reset()
                     onRunStateChange(false)
-                }
+                },
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -153,13 +166,14 @@ private fun StatusIndicator(
     progressFactor: Float,
     modifier: Modifier = Modifier
 ) {
-    Row {
-        Text(participantName, Modifier.padding(end = dimensionResource(R.dimen.padding_small)))
-
+    Row(
+        modifier = modifier
+    ) {
+        Text(
+            text = participantName,
+            modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
+        )
         Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
             LinearProgressIndicator(
@@ -195,24 +209,29 @@ private fun RaceControls(
     modifier: Modifier = Modifier,
     isRunning: Boolean = true,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+    Column(
+        modifier = modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ) {
-        Button(onClick = { onRunStateChange(!isRunning) }) {
+        Button(
+            onClick = { onRunStateChange(!isRunning) },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Text(if (isRunning) stringResource(R.string.pause) else stringResource(R.string.start))
         }
-
-        Button(onClick = onReset) {
+        OutlinedButton(
+            onClick = onReset,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
             Text(stringResource(R.string.reset))
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun RaceTrackerAppPreview() {
-    MaterialTheme {
+    RaceTrackerTheme {
         RaceTrackerApp()
     }
 }
