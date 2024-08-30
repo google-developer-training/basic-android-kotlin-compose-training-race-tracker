@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.racetracker.R
 import com.example.racetracker.ui.theme.RaceTrackerTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun RaceTrackerApp() {
@@ -67,6 +70,16 @@ fun RaceTrackerApp() {
     }
     var raceInProgress by remember { mutableStateOf(false) }
 
+    if (raceInProgress) {
+        LaunchedEffect(playerOne, playerTwo) {
+            coroutineScope {
+                launch { playerOne.run() }
+                launch { playerTwo.run() }
+            }
+            raceInProgress = false
+        }
+
+    }
     RaceTrackerScreen(
         playerOne = playerOne,
         playerTwo = playerTwo,
@@ -87,7 +100,7 @@ private fun RaceTrackerScreen(
     playerTwo: RaceParticipant,
     isRunning: Boolean,
     onRunStateChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -152,7 +165,7 @@ private fun StatusIndicator(
     currentProgress: Int,
     maxProgress: String,
     progressFactor: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -165,11 +178,11 @@ private fun StatusIndicator(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
             LinearProgressIndicator(
-                progress = progressFactor,
+                progress = { progressFactor },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.progress_indicator_height))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.progress_indicator_corner_radius)))
+                    .clip(RoundedCornerShape(dimensionResource(R.dimen.progress_indicator_corner_radius))),
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
