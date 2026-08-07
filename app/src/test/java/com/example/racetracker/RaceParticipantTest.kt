@@ -77,6 +77,16 @@ class RaceParticipantTest {
         assertEquals(expectedProgress * 2, raceParticipant.currentProgress)
     }
 
+    @Test
+    fun raceParticipant_RaceReset_ProgressUpdated() = runTest {
+        val expectedProgress = 0
+        launch { raceParticipant.run() }
+        advanceTimeBy(raceParticipant.progressDelayMillis)
+        runCurrent()
+        raceParticipant.reset()
+        assertEquals(expectedProgress, raceParticipant.currentProgress)
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun raceParticipant_ProgressIncrementZero_ExceptionThrown() = runTest {
         RaceParticipant(name = "Progress Test", progressIncrement = 0)
